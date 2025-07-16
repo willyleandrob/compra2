@@ -51,10 +51,86 @@
   <script>
     let provider, signer, userAddress;
 
-    const CONTRACT_ADDRESS = "0xYOUR_CONTRACT_ADDRESS_HERE"; // Reemplazar
+    const CONTRACT_ADDRESS = "0x5ca7C5A01Fa86fDE462F0CB7429bACEFBa9D88Cc"; // Reemplazar
     const USDT_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // USDT en Polygon
 
-    const ABI = []; // Reemplazar con ABI completo (pegado manualmente)
+    const ABI = [
+  {
+    "inputs": [
+      { "internalType": "address", "name": "_tinok", "type": "address" },
+      { "internalType": "address", "name": "_usdt", "type": "address" }
+    ],
+    "stateMutability": "nonpayable",
+    "type": "constructor"
+  },
+  {
+    "inputs": [],
+    "name": "TINOK_PER_USDT",
+    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "buyWithMATIC",
+    "outputs": [],
+    "stateMutability": "payable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "usdtAmount", "type": "uint256" }],
+    "name": "buyWithUSDT",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "owner",
+    "outputs": [{ "internalType": "address", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "tinokToken",
+    "outputs": [{ "internalType": "contract IERC20", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "usdtToken",
+    "outputs": [{ "internalType": "contract IERC20", "name": "", "type": "address" }],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "address", "name": "newWallet", "type": "address" }],
+    "name": "updateWallet",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [{ "internalType": "uint256", "name": "amount", "type": "uint256" }],
+    "name": "withdrawTokens",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      { "indexed": true, "internalType": "address", "name": "buyer", "type": "address" },
+      { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+      { "indexed": false, "internalType": "string", "name": "currency", "type": "string" }
+    ],
+    "name": "TokensPurchased",
+    "type": "event"
+  }
+]
+; // Reemplazar con ABI completo (pegado manualmente)
 
     async function connectWallet() {
       if (typeof window.ethereum !== "undefined") {
