@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Comprar TINOK</title>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+  <style>
+    body {
+      background: #0f0f1a;
+      color: white;
+      font-family: 'Inter', sans-serif;
+      padding: 40px 20px;
+      text-align: center;
+    }
+    input, button, select {
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 8px;
+      margin: 10px;
+      border: none;
+    }
+    .btn {
+      background: #845ec2;
+      color: white;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background: #d65db1;
+    }
+    #status {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Comprar TINOK</h1>
+  <button class="btn" onclick="connectWallet()">🔗 Conectar Wallet</button>
+  <div id="wallet">No conectada</div>
+
+  <p>Ingresa el monto en USDT</p>
+  <input type="number" id="usdtAmount" placeholder="Monto en USDT" />
+  <br>
+  <button class="btn" onclick="buyWithUSDT()">Comprar con USDT</button>
+
+  <div id="status"></div>
+
+  <script>
+    let provider, signer, userAddress;
+
+    const CONTRACT_ADDRESS = "0xYOUR_CONTRACT_ADDRESS_HERE"; // Reemplazar
+    const USDT_ADDRESS = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // USDT en Polygon
+
+    const ABI = []; // Reemplazar con ABI completo (pegado manualmente)
+
+    async function connectWallet() {
+      if (typeof window.ethereum !== "undefined") {
+        provider = new ethers.providers.Web3Provider(window.ethereum);
+        await provider.send("eth_requestAccounts", []);
+        signer = provider.getSigner();
+        userAddress = await signer.getAddress();
+        document.getElementById("wallet").innerText = "Conectado: " + userAddress;
+      } else {
+        alert("Por favor abre esto desde un sitio web (no desde el archivo .html directo)");
+      }
+    }
+
+    async function buyWithUSDT() {
+      const amount = document.getElementById("usdtAmount").value;
+      if (!amount || amount <= 0) return alert("Ingresa un monto válido");
+
+      const presale = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+      const usdt = new ethers.Contract(USDT_ADDRESS, [
+        "function approve(address spender, uint256 amount) public returns (bool)"
+      ], signer);
+
+      const decimals = 6;
+      const amountInUnits = ethers.utils.parseUnits(amount, decimals);
+
+      try {
+        document.getElementById("status").innerText = "Aprobando USDT...";
+        const tx1 = await usdt.approve(CONTRACT_ADDRESS, amountInUnits);
+        await tx1.wait();
+
+        document.getElementById("status").innerText = "Comprando TINOK...";
+        const tx2 = await presale.buyWithUSDT(amountInUnits);
+        await tx2.wait();
+
+        document.getElementById("status").innerText = "✅ Compra realizada con éxito.";
+      } catch (err) {
+        console.error(err);
+        document.getElementById("status").innerText = "❌ Error: " + err.message;
+      }
+    }
+  </script>
+
+</body>
+</html>
